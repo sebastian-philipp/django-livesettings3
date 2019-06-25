@@ -54,7 +54,10 @@ def group_settings(request, group, template='livesettings/group_settings.html'):
         form = None
 
     return render(request, template, {
+        'all_super_groups': mgr.get_super_groups(),
+        'page_class': 'settings',
         'title': title,
+        'settings_group': settings,
         'group': group,
         'form': form,
         'use_db': use_db,
@@ -62,6 +65,8 @@ def group_settings(request, group, template='livesettings/group_settings.html'):
 
 
 group_settings = never_cache(permission_required('livesettings.change_setting')(group_settings))
+# group_settings = never_cache(admins_only(group_settings))
+
 
 
 # Site-wide setting editor is identical, but without a group
