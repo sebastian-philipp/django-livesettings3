@@ -16,7 +16,7 @@ class ImageInput(forms.FileInput):
         self.url_resolver = kwargs.pop('url_resolver', lambda val: val)
         super(ImageInput, self).__init__(*args, **kwargs)
 
-    def render(self, name, value, attrs = None):
+    def render(self, name, value, attrs=None, renderer=None):
         output = '<img '
         if attrs and 'image_class' in attrs:
             output += 'class="%s" ' % attrs['image_class']
