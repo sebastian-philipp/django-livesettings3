@@ -41,9 +41,21 @@ def group_settings(request, group, template='livesettings/group_settings.html'):
                 for name, value in list(form.cleaned_data.items()):
                     group, key = name.split('__')
                     cfg = mgr.get_config(group, key)
-                    if cfg.update(value):
-                        # Give user feedback as to which settings were changed
-                        messages.add_message(request, messages.INFO, 'Updated %s on %s' % (cfg.key, cfg.group.key))
+                    from livesettings.values import ImageValue
+                    if isinstance(cfg, ImageValue):
+                        if request.FILES and name in request.FILES:
+                            value = request.FILES[name]
+                        else:
+                            continue
+
+                    try:
+                        if cfg.update(value):
+                            # Give user feedback as to which settings were changed
+                            messages.add_message(request, messages.INFO,
+                                                 'Updated %s on %s' % (cfg.key, cfg.group.key))
+                    except Exception as e:
+                        log.exception(f'failed to save setting {name}:={value}')
+                        request.user.message_set.create(message=str(e))
 
                 return HttpResponseRedirect(request.path)
         else:
